@@ -6,6 +6,7 @@
 #figure(
   
   kind: "tinytable",
+  supplement: none,
   tablex(
     columns: ncol,
     header-rows: nhead,
@@ -18,8 +19,6 @@ hlinex(y: 4, start: 0, end: 3, stroke: 0.1em + black),
     // tinytable lines before
 
     map-cells: cell => {
-
-
 
       // tinytable cell style before
       return cell;

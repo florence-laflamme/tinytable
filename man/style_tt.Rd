@@ -25,6 +25,7 @@ style_tt(
   line = NULL,
   line_color = "black",
   line_width = 0.1,
+  finalize = NULL,
   tabularray_inner = NULL,
   tabularray_outer = NULL,
   bootstrap_class = NULL,
@@ -100,6 +101,8 @@ style_tt(
 
 \item{line_width}{Width of the line in em units (default: 0.1).}
 
+\item{finalize}{A function applied to the table object at the very end of table-building, for post-processing. For example, the function could use regular expressions to add LaTeX commands to the text version of the table hosted in \code{x@table_string}, or it could programmatically change the caption in \code{x@caption}.}
+
 \item{tabularray_inner}{A string that specifies the "inner" settings of a tabularray LaTeX table.}
 
 \item{tabularray_outer}{A string that specifies the "outer" settings of a tabularray LaTeX table.}
@@ -141,21 +144,74 @@ When rendering Quarto and Rmarkdown documents, \code{tinytable} will populate th
 }
 
 \examples{
+\dontshow{if (knitr::is_html_output()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{\}) # examplesIf}
+if (knitr::is_html_output()) options(tinytable_print_output = "html")
+
 library(tinytable)
-x <- mtcars[1:5, 1:6]
-tab <- tt(x)
+
+tt(mtcars[1:5, 1:6])
 
 # Alignment
-style_tt(tab, j = 1:5, align = "lcccr")
-style_tt(tab, i = 2:3, background = "black", color = "orange", bold = TRUE)
-tab
+tt(mtcars[1:5, 1:6]) |> 
+  style_tt(j = 1:5, align = "lcccr")
+
+# Colors and styles
+tt(mtcars[1:5, 1:6]) |> 
+  style_tt(i = 2:3, background = "black", color = "orange", bold = TRUE)
 
 # column selection with `j``
-x <- mtcars[1:5, 1:6]
-tab <- tt(x)
-style_tt(tab, j = 5:6, background = "pink")
-style_tt(tab, j = "drat|wt", background = "pink")
-style_tt(tab, j = c("drat", "wt"), background = "pink")
+tt(mtcars[1:5, 1:6]) |> 
+  style_tt(j = 5:6, background = "pink")
+
+tt(mtcars[1:5, 1:6]) |>
+  style_tt(j = "drat|wt", background = "pink")
+
+tt(mtcars[1:5, 1:6]) |>
+  style_tt(j = c("drat", "wt"), background = "pink")
+
+tt(mtcars[1:5, 1:6], theme = "void") |>
+  style_tt(
+    i = 2, j = 2,
+    colspan = 3,
+    rowspan = 2,
+    align="c",
+    alignv = "m",
+    color = "white",
+    background = "black",
+    bold = TRUE)
+  
+tt(mtcars[1:5, 1:6], theme = "void") |>
+  style_tt(
+    i=0:3,
+    j=1:3,
+    line="tblr",
+    line_width=0.4,
+    line_color="teal")
+    
+tt(mtcars[1:5, 1:6], theme = "bootstrap") |>
+    style_tt(
+      i = c(2,5),
+      j = 3,
+      strikeout = TRUE,
+      fontsize = 0.7)
+      
+tt(mtcars[1:5, 1:6]) |>
+  style_tt(bootstrap_class = "table table-dark table-hover")
+
+
+inner <- "
+column{1-4}={halign=c},
+hlines = {fg=white},
+vlines = {fg=white},
+cell{1,6}{odd} = {bg=teal7},
+cell{1,6}{even} = {bg=green7},
+cell{2,4}{1,4} = {bg=red7},
+cell{3,5}{1,4} = {bg=purple7},
+cell{2}{2} = {r=4,c=2}{bg=azure7},
+"
+tt(mtcars[1:5, 1:4], theme = "void") |>
+  style_tt(tabularray_inner = inner)
 
 style_tt(tab,
   i = 2, j = 2,

@@ -5,7 +5,7 @@ setMethod(
 
   # class
   cl <- x@bootstrap_class
-  if (is.null(cl)) {
+  if (is.null(cl) || length(cl) == 0) {
     cl <- "table table-borderless"
   }
   out <- sub(
@@ -22,6 +22,10 @@ setMethod(
   }
 
   x@table_string <- out
+
+  for (fn in x@lazy_finalize) {
+    x <- fn(x)
+  }
 
   return(x)
 })

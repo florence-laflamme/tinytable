@@ -3,7 +3,7 @@ setMethod(
   signature = "tinytable_tabularray",
   definition = function(x, ...) {
 
-  template <- template_tabularray(x@theme)
+  template <- readLines(system.file("templates/tabularray.tex", package = "tinytable"))
 
   ncols <- ncol(x)
   nrows <- nrow(x)
@@ -35,7 +35,8 @@ setMethod(
   body <- paste(body, "\\\\")
 
   # theme: booktabs
-  if (isTRUE(x@theme %in% c("default", "striped"))) {
+  th <- x@theme[[1]]
+  if (is.null(th) || is.function(th) || isTRUE(th %in% c("default", "striped"))) {
     if (length(colnames(x)) > 0) {
       # %% are important to distinguish between potentially redundant data rows
       header[length(header)] <- paste(header[length(header)], "\\midrule %% TinyTableHeader")
@@ -65,13 +66,6 @@ setMethod(
   # colspec (we don't need rowspec)
   colspec <- sprintf("colspec={%s},", paste(tabularray_cols, collapse = ""))
   out <- tabularray_insert(out, content = colspec, type = "inner")     
-
-  # themes
-  if (x@theme == "grid") {
-    out <- tabularray_insert(out, content = "hlines={},vlines={},", type = "inner")
-  } else if (x@theme == "striped") {
-    out <- tabularray_insert(out, content = "row{even}={bg=black!5!white},", type = "inner")
-  }
 
   # notes
   if (length(x@notes) > 0) {

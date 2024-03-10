@@ -20,7 +20,7 @@ setClass(
         width = "numeric",
         width_cols = "numeric",
         notes = "list",
-        theme = "character",
+        theme = "list",
         placement = "character",
         body = "character",
         nrow = "numeric",
@@ -34,7 +34,9 @@ setClass(
         lazy_format = "list",
         lazy_group = "list",
         lazy_style = "list",
-        lazy_plot = "list")
+        lazy_plot = "list",
+        lazy_finalize = "list"
+        )
 )
 
 setMethod("initialize", "tinytable", function(
@@ -43,7 +45,7 @@ setMethod("initialize", "tinytable", function(
     table = data.frame(),
     caption = NULL,
     notes = NULL,
-    theme = "default",
+    theme = list("default"),
     placement = NULL,
     width = NULL) {
   # explicit
